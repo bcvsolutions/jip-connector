@@ -134,22 +134,37 @@ public class Connection {
 		CreateUserRequest request = new CreateUserRequest();
 		createAttributes.forEach(attribute -> {
 			if (attribute.getName().equals(JipConnector.TITULY_PRED)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setTitulPred(String.valueOf(attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.FIRSTNAME)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setFirstname(String.valueOf(attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.SURNAME)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setSurname(String.valueOf(attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.PASSWORD)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setPassword(getPassword((GuardedString) attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.EMAIL)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				CreateUserRequest.Email.Item emailItem = new CreateUserRequest.Email.Item();
 				emailItem.setType("1");
 				emailItem.setEmail(String.valueOf(attribute.getValue().get(0)));
@@ -160,19 +175,31 @@ public class Connection {
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.TITULY_ZA)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setTitulZa(String.valueOf(attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals("__NAME__")) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setUsername(String.valueOf(attribute.getValue().get(0)));
 				request.setObjectId(String.valueOf(attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.LOGIN_DISABLED)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setLoginDisabled(String.valueOf(attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.OSOBA_KRIZ_RIZENI)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setOsobaKrizovehoRizeni(String.valueOf(attribute.getValue().get(0)).toUpperCase());
 				return;
 			}
@@ -223,7 +250,7 @@ public class Connection {
 		} catch (JAXBException e) {
 			try {
 				ErrorResponse errorResponse = (ErrorResponse) getObject(response.getBody(), new ErrorResponse());
-				throw new ConnectorException(errorResponse.getMessage());
+				throw new ConnectorException(errorResponse.getCode() + " - " + errorResponse.getMessage());
 			} catch (JAXBException e1) {
 				LOG.error("Error during create user {0}", e.toString());
 			}
@@ -245,23 +272,38 @@ public class Connection {
 		request.setUsername(uid.getUidValue());
 		replaceAttributes.forEach(attribute -> {
 			if (attribute.getName().equals(JipConnector.TITULY_PRED)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				JAXBElement<String> titulPred = factory.createUpdateUserRequestTitulPred(String.valueOf(attribute.getValue().get(0)));
 				request.setTitulPred(titulPred);
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.FIRSTNAME)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setFirstname(String.valueOf(attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.SURNAME)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setSurname(String.valueOf(attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.PASSWORD)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				request.setPassword(getPassword((GuardedString) attribute.getValue().get(0)));
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.EMAIL)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				UpdateUserRequest.Email emailObject = new UpdateUserRequest.Email();
 				UpdateUserRequest.Email.Item emailItem = new UpdateUserRequest.Email.Item();
 				emailItem.setType("1");
@@ -273,16 +315,25 @@ public class Connection {
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.TITULY_ZA)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				JAXBElement<String> titulyZa = factory.createUpdateUserRequestTitulZa(String.valueOf(attribute.getValue().get(0)));
 				request.setTitulZa(titulyZa);
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.LOGIN_DISABLED)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				JAXBElement<String> disabled = factory.createUpdateUserRequestLoginDisabled(String.valueOf(attribute.getValue().get(0)));
 				request.setLoginDisabled(disabled);
 				return;
 			}
 			if (attribute.getName().equals(JipConnector.OSOBA_KRIZ_RIZENI)) {
+				if (isEmpty(attribute)) {
+					return;
+				}
 				JAXBElement<String> osobaKrizRizeni = factory.createUpdateUserRequestOsobaKrizovehoRizeni(String.valueOf(attribute.getValue().get(0)).toUpperCase());
 				request.setOsobaKrizovehoRizeni(osobaKrizRizeni);
 				return;
@@ -342,13 +393,17 @@ public class Connection {
 		} catch (JAXBException e) {
 			try {
 				ErrorResponse errorResponse = (ErrorResponse) getObject(response.getBody(), new ErrorResponse());
-				throw new ConnectorException(errorResponse.getMessage());
+				throw new ConnectorException(errorResponse.getCode() + " - " + errorResponse.getMessage());
 			} catch (JAXBException e1) {
 				LOG.error("Error during update user {0}", e.toString());
 			}
 			LOG.error("Error during update user {0}", e.toString());
 		}
 		return null;
+	}
+
+	private boolean isEmpty(Attribute attribute) {
+		return attribute.getValue() == null || attribute.getValue().isEmpty();
 	}
 
 	/**
