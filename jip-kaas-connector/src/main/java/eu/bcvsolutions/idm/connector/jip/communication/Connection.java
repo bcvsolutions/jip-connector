@@ -395,7 +395,7 @@ public class Connection {
 				ErrorResponse errorResponse = (ErrorResponse) getObject(response.getBody(), new ErrorResponse());
 				throw new ConnectorException(errorResponse.getCode() + " - " + errorResponse.getMessage());
 			} catch (JAXBException e1) {
-				LOG.error("Error during create user, cannot parse error message {0}", e1.toString());
+				LOG.error("Error during update user, cannot parse error message {0}", e1.toString());
 			}
 			LOG.error("Error during update user {0}", e.toString());
 		}
